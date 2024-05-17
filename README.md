@@ -1,6 +1,3 @@
-Sure, here's an updated version of the README in English, including instructions for using the provided Jupyter notebooks:
-
----
 
 # Happiness Prediction Project using Kafka and Machine Learning
 

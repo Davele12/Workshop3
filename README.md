@@ -27,35 +27,45 @@ This project utilizes Apache Kafka for real-time data streaming and a linear reg
 Create a `docker-compose.yml` file with the following content:
 
 ```yaml
-version: '3.8' # Docker Compose version
+version: '3.8'
 
-services: # Containers to run
-  zookeeper: # First container (Service)
-    image: confluentinc/cp-zookeeper:latest  # Zookeeper Docker image
-    container_name: zookeeper # Container name
-    environment: # Environment variables
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
-    ports: # Maps port 2181 from the host to port 2181 inside the zookeeper container
+    ports:
       - 2181:2181
 
-  kafka: # Second container (Service)
-    image: confluentinc/cp-kafka:latest # Latest version of Kafka Docker image
-    container_name: kafka # Container name
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
     depends_on:
-      - zookeeper # Kafka depends on Zookeeper so Kafka will not start until Zookeeper service is up and running
+      - zookeeper
     environment:
-      KAFKA_BROKER_ID: 1 # The unique identifier for this Kafka broker (set to 1 in this case)
-      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181' # The connection information for ZooKeeper, which is accessible at zookeeper:2181
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT # Defines the security protocols for Kafka listeners
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:29092 # Defines the advertised endpoints for clients to connect to the Kafka broker
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:29092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
     ports:
-      - "9092:9092" # Port to use to connect from Kafka broker to localhost port
+      - "9092:9092"
     expose:
-     - "29092" # Exposes port 29092 for internal communication
+      - "29092"
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      POSTGRES_USER: david
+      POSTGRES_PASSWORD: david
+      POSTGRES_DB: predictions_db
+    ports:
+      - "5432:5432"
 
 networks:
   kafka_network:
